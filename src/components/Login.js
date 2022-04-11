@@ -1,21 +1,22 @@
 import { useRef, useState, useEffect } from 'react';
-import useAuth from './hooks/userAuth';
+import useAuth from '../hooks/userAuth';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
-
-import axios from './api/axios';
+import axios from '../api/axios';
 const LOGIN_URL = '/authenticate';
 
 const Login = () => {
     const { setAuth } = useAuth();
 
- 
-    
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/";
 
     const userRef = useRef();
     const errRef = useRef();
 
-    const [user, setUser] = useState('');
-    const [pwd, setPwd] = useState('');
+    const [userName, setUser] = useState('');
+    const [userPassword, setPwd] = useState('');
     const [errMsg, setErrMsg] = useState('');
 
     useEffect(() => {
@@ -24,14 +25,14 @@ const Login = () => {
 
     useEffect(() => {
         setErrMsg('');
-    }, [user, pwd])
+    }, [userName, userPassword])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
             const response = await axios.post(LOGIN_URL,
-                JSON.stringify({ user, pwd }),
+                JSON.stringify({ userName, userPassword }),
                 {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
@@ -39,12 +40,16 @@ const Login = () => {
             );
             console.log(JSON.stringify(response?.data));
             //console.log(JSON.stringify(response));
-            const accessToken = response?.data?.jwtToken;
+            const accessToken = response?.data?.accessToken;
             const roles = response?.data?.role;
-            setAuth({ user, pwd, roles, accessToken });
+            
+            // eslint-disable-next-line no-lone-blocks
+           
+            console.log(roles)
+            setAuth({ userName, userPassword, roles, accessToken });
             setUser('');
             setPwd('');
-           
+            navigate(from, { replace: true });
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
@@ -72,7 +77,7 @@ const Login = () => {
                     ref={userRef}
                     autoComplete="off"
                     onChange={(e) => setUser(e.target.value)}
-                    value={user}
+                    value={userName}
                     required
                 />
 
@@ -81,7 +86,7 @@ const Login = () => {
                     type="password"
                     id="password"
                     onChange={(e) => setPwd(e.target.value)}
-                    value={pwd}
+                    value={userPassword}
                     required
                 />
                 <button>Sign In</button>
@@ -89,7 +94,7 @@ const Login = () => {
             <p>
                 Need an Account?<br />
                 <span className="line">
-                    
+                    <Link to="/register">Sign Up</Link>
                 </span>
             </p>
         </section>
