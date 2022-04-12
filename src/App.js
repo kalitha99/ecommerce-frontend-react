@@ -28,11 +28,11 @@ function App() {
         <Route path="unauthorized" element={<Unauthorized />} />
 
         {/* we want to protect these routes */}
-        <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
+        <Route element={<RequireAuth allowedRoles={[ROLES.User,ROLES.Admin]} />}>
           <Route path="/" element={<Home />} />
         </Route>
 
-        <Route element={<RequireAuth allowedRoles={[ROLES.Editor]} />}>
+        <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
           <Route path="editor" element={<Editor />} />
         </Route>
 
@@ -41,7 +41,7 @@ function App() {
           <Route path="admin" element={<Admin />} />
         </Route>
 
-        <Route element={<RequireAuth allowedRoles={[ROLES.Editor, ROLES.Admin]} />}>
+        <Route element={<RequireAuth allowedRoles={[ROLES.User ]} />}>
           <Route path="lounge" element={<Lounge />} />
         </Route>
 
